@@ -74,6 +74,10 @@ RUN echo "Installing sqlpackage" \
     && chmod a+x /opt/sqlpackage/sqlpackage \
     && ln -sfn /opt/mssql-tools/bin/sqlcmd /usr/bin/sqlcmd
 
+# Install YQ
+RUN sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
+    && sudo chmod a+x /usr/local/bin/yq
+
 # Clean up
 RUN apt-get autoremove -y \
     && apt-get clean -y \

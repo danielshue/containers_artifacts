@@ -1,0 +1,95 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userprofile
+  namespace: tripinsights-backend
+  labels:
+    deploy: userprofile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userprofile
+  template:
+    metadata:
+      labels:
+        app: userprofile
+    spec:
+      containers:
+      - image: "registryltt9233.azurecr.io/danshue/userprofile:latest"
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        name: userprofile
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        env:
+        - name: PORT
+          value: '80'
+        - name: DEBUG_LOGGING
+          value: 'true'
+        - name: SQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: sql-creds
+              key: sql-user
+        - name: SQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sql-creds
+              key: sql-password
+        - name: SQL_SERVER
+          valueFrom:
+            secretKeyRef:
+              name: sql-creds
+              key: sql-server
+        - name: SQL_DBNAME
+          valueFrom:
+            secretKeyRef:
+              name: sql-creds
+              key: sql-dbname
+        - name: CREDENTIAL_METHOD
+          value: username_and_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: userprofile
+  namespace: tripinsights-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: userprofile
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: userprofile-ingress
+  namespace: tripinsights-backend  
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: aks-tripinsights-danshue.28e397100e3e4f238d77.westus2.aksapp.io
+    http:
+      paths:
+      - path: /api/user
+        pathType: Prefix
+        backend:
+          service: 
+            name: userprofile
+            port: 
+              number: 80

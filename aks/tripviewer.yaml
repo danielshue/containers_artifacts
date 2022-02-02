@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: tripinsights-frontend  
+  name: tripviewer
+  labels:
+    deploy: tripviewer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tripviewer
+  template:
+    metadata:
+      labels:
+        app: tripviewer
+    spec:
+      containers:
+      - image: "registryltt9233.azurecr.io/danshue/tripviewer:latest"
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        name: tripviewer
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        env:
+        - name: PORT
+          value: '80'
+        - name: TRIPS_API_ENDPOINT
+          value: http://trips.tripinsights-backend
+        - name: USERPROFILE_API_ENDPOINT
+          value: http://userprofile.tripinsights-backend          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: tripinsights-frontend  
+  name: tripviewer
+spec:
+  type: ClusterIP
+  selector:
+    app: tripviewer
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tripviewer-ingress
+  namespace: tripinsights-frontend  
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: aks-tripinsights-danshue.28e397100e3e4f238d77.westus2.aksapp.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: tripviewer
+            port: 
+              number: 80
