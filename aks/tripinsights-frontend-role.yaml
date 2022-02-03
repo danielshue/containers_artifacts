@@ -4,8 +4,8 @@ metadata:
   namespace: tripinsights-frontend
   name: tripinsights-frontend-reader-role
 rules:
-- apiGroups: ["apps", ""]
-  resources: ["pods", "deployments", "services", "ingress", "secrets"]
+- apiGroups: ["apps", "", "networking.k8s.io"]
+  resources: ["pods", "deployments", "services", "ingresses", "secrets"]
   verbs: ["get", "watch", "list"]
 
 ---
@@ -15,8 +15,8 @@ metadata:
   namespace: tripinsights-frontend
   name: tripinsights-frontend-writer-role
 rules:
-- apiGroups: ["apps", ""]
-  resources: ["pods", "deployments", "services", "ingress", "secrets"]
+- apiGroups: ["apps", "", "networking.k8s.io"]
+  resources: ["pods", "deployments", "services", "ingresses", "secrets"]
   verbs: ["*"]
 
 ---
