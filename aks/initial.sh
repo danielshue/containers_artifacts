@@ -51,4 +51,10 @@ k get pods --namespace tripinsights-backend
 k describe ingress poi-ingress -n tripinsights-backend
 
 k logs
-k exec sh
+
+k get pods -n tripinsights-backend
+
+k get pods -n tripinsights-frontend
+
+k exec -it tripviewer-5496888ff4-9njdb  -n tripinsights-frontend -- /bin/sh
+

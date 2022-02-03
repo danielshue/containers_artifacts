@@ -18,6 +18,12 @@ spec:
     spec:
       containers:
       - image: "registryltt9233.azurecr.io/danshue/userprofile:latest"
+
+        volumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+
         imagePullPolicy: Always
         resources:
           requests:
@@ -36,28 +42,38 @@ spec:
           value: '80'
         - name: DEBUG_LOGGING
           value: 'true'
-        - name: SQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: sql-creds
-              key: sql-user
-        - name: SQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: sql-creds
-              key: sql-password
-        - name: SQL_SERVER
-          valueFrom:
-            secretKeyRef:
-              name: sql-creds
-              key: sql-server
-        - name: SQL_DBNAME
-          valueFrom:
-            secretKeyRef:
-              name: sql-creds
-              key: sql-dbname
+
+#        - name: SQL_USER
+#          valueFrom:
+#            secretKeyRef:
+#              name: sql-creds
+#              key: sql-user
+#        - name: SQL_PASSWORD
+#          valueFrom:
+#            secretKeyRef:
+#              name: sql-creds
+#              key: sql-password
+#        - name: SQL_SERVER
+#          valueFrom:
+#            secretKeyRef:
+#              name: sql-creds
+#              key: sql-server
+#        - name: SQL_DBNAME
+#          valueFrom:
+#            secretKeyRef:
+#              name: sql-creds
+#              key: sql-dbname
         - name: CREDENTIAL_METHOD
           value: username_and_password
+        - name: CONFIG_FILES_PATH
+          value: /mnt/secrets-store          
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: sql-creds                        
 ---
 apiVersion: v1
 kind: Service
