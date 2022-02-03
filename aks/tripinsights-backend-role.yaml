@@ -1,0 +1,50 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: tripinsights-backend
+  name: tripinsights-backend-reader-role
+rules:
+- apiGroups: ["apps", ""]
+  resources: ["pods", "deployments", "services", "ingress", "secrets"]
+  verbs: ["get", "watch", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: tripinsights-backend
+  name: tripinsights-backend-writer-role
+rules:
+- apiGroups: ["apps", ""]
+  resources: ["pods", "deployments", "services", "ingress", "secrets"]
+  verbs: ["*"]
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tripinsights-backend-writer-rolebinding
+  namespace: tripinsights-backend
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tripinsights-backend-writer-role
+subjects:
+- kind: Group
+  namespace: tripinsights-backend
+  name: c3822421-1c88-4ebc-b1d5-a82321be9166
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tripinsights-backend-reader-rolebinding
+  namespace: tripinsights-backend
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tripinsights-backend-reader-role
+subjects:
+- kind: Group
+  namespace: tripinsights-backend
+  name: 9e0458c3-9698-44e3-bd4b-f4ece38831da
